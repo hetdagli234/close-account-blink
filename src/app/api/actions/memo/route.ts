@@ -82,7 +82,7 @@ export const POST = async (req: Request) => {
         let message = ''
 
         if(accountOverflowFlag){
-            message = `Congrats you just cleared 25 token accounts, you can still clear ${leftLength} token accounts left to be claimed`
+            message = `Congrats you just cleared 25 token accounts, there are ${leftLength} token accounts left to be claimed`
         }
         else{
             message = `You just cleared ${zeroAccounts}. Share it with the world <a href='http://bing.com'>Bing</a>`
