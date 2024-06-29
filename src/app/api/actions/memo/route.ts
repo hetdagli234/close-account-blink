@@ -2,7 +2,7 @@ import { ACTIONS_CORS_HEADERS, ActionGetResponse, ActionPostRequest, ActionError
 import { Connection, PublicKey, Transaction } from "@solana/web3.js"
 import { getTokenAccounts } from "../tokenAccounts"
 import { createCloseAccountInstruction } from "@solana/spl-token"
-
+export const runtime = "edge"
 require('dotenv').config();
 
 export const GET = (req: Request) => {
