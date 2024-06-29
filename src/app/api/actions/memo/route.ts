@@ -26,7 +26,15 @@ export const POST = async (req: Request) => {
 
         let account: PublicKey;
 
-        const connection = new Connection(process.env.RPC_URL);
+        const rpcUrl = process.env.RPC_URL;
+        if (!rpcUrl) {
+            return new Response('RPC_URL is not defined in environment variables', {
+                status: 500,
+                headers: ACTIONS_CORS_HEADERS
+            });
+        }
+
+        const connection = new Connection(rpcUrl);
 
         try{
             account = new PublicKey(body.account);
@@ -92,4 +100,3 @@ export const POST = async (req: Request) => {
         return Response.json(`unkown error ${err}`, { status: 400})
     }
 }
-
