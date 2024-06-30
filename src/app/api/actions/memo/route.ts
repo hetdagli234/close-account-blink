@@ -2,12 +2,11 @@ import { ACTIONS_CORS_HEADERS, ActionGetResponse, ActionPostRequest, ActionError
 import { Connection, PublicKey, Transaction } from "@solana/web3.js"
 import { getTokenAccounts } from "../tokenAccounts"
 import { createCloseAccountInstruction } from "@solana/spl-token"
-export const runtime = "edge"
 require('dotenv').config();
 
 export const GET = (req: Request) => {
     const payload: ActionGetResponse = {
-        icon: new URL("/rent.png", new URL(req.url).origin).toString(),
+        icon: new URL("/cleanRent.jpeg", new URL(req.url).origin).toString(),
         label: "Reclaim Rent",
         description: "On Solana, token accounts require a small amount of rent (in SOL) to be stored on the blockchain. For empty token accounts, you can close them to reclaim this rent deposit, usually around 0.002 SOL per account, and have it credited back to your main SOL wallet.",
         title: "Reclaim rent from all the empty token accounts"
@@ -100,3 +99,5 @@ export const POST = async (req: Request) => {
         return Response.json(`unkown error ${err}`, { status: 400})
     }
 }
+
+export const runtime = "edge"
