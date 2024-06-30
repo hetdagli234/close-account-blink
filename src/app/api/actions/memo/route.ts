@@ -99,5 +99,3 @@ export const POST = async (req: Request) => {
         return Response.json(`unkown error ${err}`, { status: 400})
     }
 }
-
-export const runtime = "edge"
