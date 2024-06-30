@@ -65,8 +65,10 @@ export const POST = async (req: Request) => {
 
         const leftLength = zeroAccounts.length - 25
 
+        console.log(`${zeroAccounts.length} zero token accounts found`)
+
         if(zeroAccounts.length>25){
-            zeroAccounts = zeroAccounts.slice(25)
+            zeroAccounts = zeroAccounts.slice(0, 25)
             accountOverflowFlag = true
         }
 
