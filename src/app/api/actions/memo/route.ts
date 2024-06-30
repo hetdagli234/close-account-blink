@@ -1,5 +1,5 @@
-import { ACTIONS_CORS_HEADERS, ActionGetResponse, ActionPostRequest, ActionError, createPostResponse, parseURL } from "@solana/actions"
-import { Connection, PublicKey, Transaction } from "@solana/web3.js"
+import { ACTIONS_CORS_HEADERS, ActionGetResponse, ActionPostRequest, ActionError, createPostResponse, MEMO_PROGRAM_ID, ActionPostResponse } from "@solana/actions"
+import { Connection, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js"
 import { getTokenAccounts } from "../tokenAccounts"
 import { createCloseAccountInstruction } from "@solana/spl-token"
 require('dotenv').config();
@@ -81,13 +81,14 @@ export const POST = async (req: Request) => {
         let message = ''
 
         if(accountOverflowFlag){
-            message = `Congrats you just cleared 25 token accounts, there are ${leftLength} token accounts left to be claimed`
+            message = `Congrats you just claimed rent for 25 zero token accounts, there are still ${leftLength} accounts left to be claimed`
         }
         else{
-            message = `You just cleared ${zeroAccounts}. Share it with the world <a href='http://bing.com'>Bing</a>`
+            message = `You just cleared ${zeroAccounts.length} zero token accounts.`
         }
+        transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-        const payload = await createPostResponse({
+        const payload: ActionPostResponse = await createPostResponse({
             fields: {
                 transaction,
                 message: message

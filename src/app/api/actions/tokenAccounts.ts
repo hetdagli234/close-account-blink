@@ -7,8 +7,6 @@ async function getTokenAccounts(wallet: PublicKey, solanaConnection: Connection)
 
     const zeroAccounts = accounts.value.filter(account => account.account.data.parsed.info.tokenAmount.uiAmount === 0);
 
-    console.log(`Zero accounts ${zeroAccounts}`)
-
     return zeroAccounts
 }
 
