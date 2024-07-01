@@ -1,7 +1,8 @@
 import { ACTIONS_CORS_HEADERS, ActionGetResponse, ActionPostRequest, ActionError, createPostResponse, MEMO_PROGRAM_ID, ActionPostResponse } from "@solana/actions"
-import { Connection, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js"
+import { Connection, PublicKey, Transaction, AddressLookupTableProgram, sendAndConfirmTransaction, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js"
 import { getTokenAccounts } from "../tokenAccounts"
-import { createCloseAccountInstruction } from "@solana/spl-token"
+import { createCloseAccountInstruction, TOKEN_PROGRAM_ID } from "@solana/spl-token"
+import { Instruction } from "@coral-xyz/anchor";
 require('dotenv').config();
 
 export const GET = (req: Request) => {
@@ -67,18 +68,34 @@ export const POST = async (req: Request) => {
 
         console.log(`${zeroAccounts.length} zero token accounts found`)
 
-        if(zeroAccounts.length>25){
-            zeroAccounts = zeroAccounts.slice(0, 25)
-            accountOverflowFlag = true
-        }
-
-        try{
-            zeroAccounts.forEach((zeroAccount) => {
-            transaction.add(createCloseAccountInstruction(zeroAccount.pubkey, account, account));
+        let ixArray: TransactionInstruction[] = [];
+        zeroAccounts.forEach((zeroAccount) => {
+            ixArray.push(createCloseAccountInstruction(zeroAccount.pubkey, account, account));
         })
-        } catch(e){
-            console.log(`Failed adding instruction ${e}`)
-        }
+
+        const lookupTableAccount = (
+            await connection.getAddressLookupTable(new PublicKey("HVWfyd4kBfCeGfsAvckD5pkrUwUw7kQwpMYGMXMdPpRh"))
+          ).value;
+        const messageV0 = new TransactionMessage({
+            payerKey: account,
+            recentBlockhash: (await connection.getLatestBlockhash()).blockhash,
+            instructions: ixArray.slice(0, 50), // note this is an array of instructions
+          }).compileToV0Message(lookupTableAccount ? [lookupTableAccount] : []);
+
+        const transactionV0 = new VersionedTransaction(messageV0);
+
+        // if(zeroAccounts.length>25){
+        //     zeroAccounts = zeroAccounts.slice(0, 25)
+        //     accountOverflowFlag = true
+        // }
+
+        // try{
+        //     zeroAccounts.forEach((zeroAccount) => {
+        //     transaction.add(createCloseAccountInstruction(zeroAccount.pubkey, account, account));
+        // })
+        // } catch(e){
+        //     console.log(`Failed adding instruction ${e}`)
+        // }
 
         let message = ''
 
@@ -90,9 +107,11 @@ export const POST = async (req: Request) => {
         }
         transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-        const payload: ActionPostResponse = await createPostResponse({
+        const payload = ({
             fields: {
-                transaction,
+                transaction: Buffer.from(transactionV0.serialize()).toString(
+                    "base64"
+                  ),
                 message: message
             }
         })
@@ -102,3 +121,49 @@ export const POST = async (req: Request) => {
         return Response.json(`unkown error ${err}`, { status: 400})
     }
 }
+
+
+// import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
+// import * as web3 from "@solana/web3.js"
+
+// async function main() {
+//     const connection = new web3.Connection("");
+
+//     const slot = await connection.getSlot();
+//     const account = web3.Keypair.fromSecretKey(bs58.decode(''))
+
+
+//     // const [lookupTableInst, lookupTableAddress] =
+//     // web3.AddressLookupTableProgram.createLookupTable({
+//     //     authority: account.publicKey, 
+//     //     payer: account.publicKey,
+//     //     recentSlot: slot,
+//     // });
+
+//     // console.log("lookup table address:", lookupTableAddress.toBase58());
+
+//     // const lookUpTransaction = new web3.Transaction();
+//     // lookUpTransaction.add(lookupTableInst)
+
+//     // await web3.sendAndConfirmTransaction(connection, lookUpTransaction,[account])
+
+//     const permLookUp = new web3.PublicKey("HVWfyd4kBfCeGfsAvckD5pkrUwUw7kQwpMYGMXMdPpRh")
+
+//     const extendInstruction = web3.AddressLookupTableProgram.extendLookupTable({
+//         payer: account.publicKey,
+//         authority: account.publicKey,
+//         lookupTable: permLookUp,
+//         addresses: [
+//             new web3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+//             new web3.PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL")
+//         ],
+//       });
+    
+//     const extendTx = new web3.Transaction();
+
+//     extendTx.add(extendInstruction)
+
+//     await web3.sendAndConfirmTransaction(connection, extendTx,[account])
+// }
+
+// main()
