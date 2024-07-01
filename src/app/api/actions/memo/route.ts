@@ -8,8 +8,8 @@ export const GET = (req: Request) => {
     const payload: ActionGetResponse = {
         icon: new URL("/cleanRent.jpeg", new URL(req.url).origin).toString(),
         label: "Reclaim Rent",
-        description: "On Solana, token accounts require a small amount of rent (in SOL) to be stored on the blockchain. For empty token accounts, you can close them to reclaim this rent deposit, usually around 0.002 SOL per account, and have it credited back to your main SOL wallet.",
-        title: "Reclaim rent from all the empty token accounts"
+        description: "Earn free money from your own wallet accounts. Yes! Reclaim your rent deposit from your empty token accounts, which is paid during token account creation (usually ~0.002 SOL or ~$0.3). Have it credited back to your main SOL account.",
+        title: "Close Token Accounts with 0 Balance"
     }
 
     return Response.json(payload, {
@@ -83,10 +83,10 @@ export const POST = async (req: Request) => {
         let message = ''
 
         if(accountOverflowFlag){
-            message = `Congrats you just claimed rent for 25 zero token accounts, there are still ${leftLength} accounts left to be claimed`
+            message = `Congrats you just claimed rent for 25 zero balance token accounts, there are still ${leftLength} accounts left to be claimed`
         }
         else{
-            message = `You just cleared ${zeroAccounts.length} zero token accounts.`
+            message = `You just cleared ${zeroAccounts.length} zero balance token accounts.`
         }
         transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
