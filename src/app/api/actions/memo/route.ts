@@ -65,20 +65,36 @@ export const POST = async (req: Request) => {
 
         const leftLength = zeroAccounts.length - 25
 
-        console.log(`${zeroAccounts.length} zero token accounts found`)
+        // console.log(`${zeroAccounts.length} zero token accounts found`)
 
-        if(zeroAccounts.length>25){
-            zeroAccounts = zeroAccounts.slice(0, 25)
-            accountOverflowFlag = true
-        }
+        // if(zeroAccounts.length>25){
+        //     zeroAccounts = zeroAccounts.slice(0, 25)
+        //     accountOverflowFlag = true
+        // }
 
-        try{
-            zeroAccounts.forEach((zeroAccount) => {
-            transaction.add(createCloseAccountInstruction(zeroAccount.pubkey, account, account));
-        })
-        } catch(e){
-            console.log(`Failed adding instruction ${e}`)
-        }
+        // try{
+        //     zeroAccounts.forEach((zeroAccount) => {
+        //     transaction.add(createCloseAccountInstruction(zeroAccount.pubkey, account, account));
+        // })
+        // } catch(e){
+        //     console.log(`Failed adding instruction ${e}`)
+        // }
+
+        let recentBlockhash = (await connection.getLatestBlockhash()).blockhash
+
+        const transactions: Transaction[] = [];
+
+        chunks(zeroAccounts).forEach((chunk) => {
+            // New empty transaction
+            const txn = new Transaction();
+            txn.feePayer = account;
+            txn.recentBlockhash = recentBlockhash;
+            for (const singleAccount of chunk) {
+              // Add a `closeAccount` instruction for every token account in the chunk
+              txn.add(createCloseAccountInstruction(singleAccount.pubkey, account, account));
+            }
+            transactions.push(txn);
+          });
 
         let message = ''
 
@@ -90,15 +106,32 @@ export const POST = async (req: Request) => {
         }
         transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-        const payload: ActionPostResponse = await createPostResponse({
+        // const payload: ActionPostResponse = await createPostResponse({
+        //     fields: {
+        //         transaction,
+        //         message: message
+        //     }
+        // })
+        const payload = {
             fields: {
-                transaction,
+                transaction: Buffer.from(transactions.map(t => t.serialize()).join('')).toString(
+                    "base64"
+                  ),
                 message: message
             }
-        })
+        }
 
         return Response.json(payload, { headers: ACTIONS_CORS_HEADERS})
     } catch(err){
         return Response.json(`unkown error ${err}`, { status: 400})
     }
 }
+
+// Split an array into chunks of length `chunkSize`
+const chunks = <T>(array: T[], chunkSize = 10): T[][] => {
+    let res: T[][] = [];
+    for (let currentChunk = 0; currentChunk < array.length; currentChunk += chunkSize) {
+      res.push(array.slice(currentChunk, currentChunk + chunkSize));
+    }
+    return res;
+  };
