@@ -17,6 +17,7 @@ export const GET = (req: Request) => {
     return Response.json(payload, {
         headers: {
         ...ACTIONS_CORS_HEADERS,
+        "Content-Type": "application/json",
         "X-Meta-Tags": metaTag
         }
     })
