@@ -8,7 +8,7 @@ export const GET = (req: Request) => {
     const payload: ActionGetResponse = {
         icon: new URL("/sendit.GIF", new URL(req.url).origin).toString(),
         label: "Reclaim Rent",
-        description: "Earn free money from your own wallet accounts. Yes! Reclaim your rent deposit from your empty token accounts, which is paid during token account creation (usually ~0.002 SOL or ~$0.3). Have it credited back to your main SOL account.",
+        description: "Reclaim your rent deposit from your empty token accounts (tokens with 0 balance), which is paid during token account creation (usually ~0.002 SOL or ~$0.3). Have it credited back to your main SOL account.",
         title: "Close Token Accounts with 0 Balance"
     }
 
@@ -83,7 +83,7 @@ export const POST = async (req: Request) => {
         let message = ''
 
         if(accountOverflowFlag){
-            message = `25 token accounts cleared receiving ${25*0.002} SOL, there are still ${leftLength} accounts with appx ${leftLength*0.002} SOL left to be claimed.`
+            message = `🎉 🥳 ${25*0.002} SOL claimed by closing 25 accounts, there are still appx ${leftLength*0.002} SOL left to be claimed. Refresh the page and claim again.`
         }
         else{
             message = `${zeroAccounts.length} zero balance token accounts cleared receiving ${zeroAccounts.length*0.002} SOL.`
