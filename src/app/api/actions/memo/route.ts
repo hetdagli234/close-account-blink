@@ -86,7 +86,7 @@ export const POST = async (req: Request) => {
             message = `25 token accounts cleared receiving ${25*0.002} SOL, there are still ${leftLength} accounts with appx ${leftLength*0.002} SOL left to be claimed.`
         }
         else{
-            message = `${zeroAccounts.length} zero balance token accounts cleared and receiving ${zeroAccounts.length*0.002} SOL.`
+            message = `${zeroAccounts.length} zero balance token accounts cleared receiving ${zeroAccounts.length*0.002} SOL.`
         }
         transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
