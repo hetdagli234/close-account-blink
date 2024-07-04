@@ -83,10 +83,10 @@ export const POST = async (req: Request) => {
         let message = ''
 
         if(accountOverflowFlag){
-            message = `Congrats you just claimed rent for 25 zero balance token accounts, there are still ${leftLength} accounts left to be claimed`
+            message = `25 token accounts cleared receiving ${25*0.002} SOL, there are still ${leftLength} accounts with appx ${leftLength*0.002} SOL left to be claimed.`
         }
         else{
-            message = `You just cleared ${zeroAccounts.length} zero balance token accounts.`
+            message = `${zeroAccounts.length} zero balance token accounts cleared and receiving ${zeroAccounts.length*0.002} SOL.`
         }
         transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
