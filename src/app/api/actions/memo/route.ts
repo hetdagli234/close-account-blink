@@ -12,7 +12,7 @@ export const GET = (req: Request) => {
         title: "Close Token Accounts with 0 Balance"
     }
 
-    const metaTag = `<meta property="og:image" content="${payload.icon}" />`;
+    const metaTag = `<meta property="twitter:image" content="${payload.icon}" />`;
 
     return Response.json(payload, {
         headers: {
