@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: "/",
-        destination: "/api/actions/memo",
+        destination: "https://www.thesendcoin.com",
       },
     ];
   },
