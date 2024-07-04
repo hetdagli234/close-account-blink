@@ -12,8 +12,13 @@ export const GET = (req: Request) => {
         title: "Close Token Accounts with 0 Balance"
     }
 
+    const metaTag = `<meta property="og:image" content="${payload.icon}" />`;
+
     return Response.json(payload, {
-        headers: ACTIONS_CORS_HEADERS
+        headers: {
+        ...ACTIONS_CORS_HEADERS,
+        "X-Meta-Tags": metaTag
+        }
     })
 }
 
