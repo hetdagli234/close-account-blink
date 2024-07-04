@@ -7,7 +7,7 @@ require('dotenv').config();
 export const GET = (req: Request) => {
     const payload: ActionGetResponse = {
         icon: new URL("/sendit.GIF", new URL(req.url).origin).toString(),
-        label: "Reclaim Rent",
+        label: "Sign txn and Claim",
         description: "Reclaim your rent deposit from your empty token accounts (tokens with 0 balance), which is paid during token account creation (usually ~0.002 SOL or ~$0.3). Have it credited back to your main SOL account.",
         title: "Close Token Accounts with 0 Balance"
     }
